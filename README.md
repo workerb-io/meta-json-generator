@@ -71,6 +71,28 @@ module.exports = {
 
 ## Add Description in action scripts
 
+### Prerequisites for this
+
+_add UglifyJs plugin in webpack.config.js_
+
+```
+optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          output: {
+            comments: /(@description|@name|@ignore)/i,
+          },
+        }
+      }),
+    ],
+  }
+```
+
+_This will preserve all the comments in the file which has either @description or @name or @ignore present_
+
+
+
 _in any *.ts/*.js file_
 
 ```
@@ -78,5 +100,6 @@ _in any *.ts/*.js file_
 ```
 
 The description will be added in meta.json file just by adding a comment in each script/action with **@description**
+
 
 

@@ -146,12 +146,12 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 	};
 			  
 	for (var filename in compilationAssestsObject) {
-		let fileDesc = "";
-		let folderDesc = "";
-		if(!filename.includes(".json")) {
-			let content = compilationAssestsObject[filename].source();
-			fileDesc = getFileDescription(content);
+		if(!isValidFile(compilationAssestsObject, filename)) {
+			continue;
 		}
+		let folderDesc = "";
+		let content = compilationAssestsObject[filename].source();
+		let fileDesc = getFileDescription(content);
 		let directory = directoryObject;
 		let path = filename.split("/");
 		let file = path.pop();
@@ -184,6 +184,26 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 		}
 	}
 	return directoryObject;
+}
+
+/**
+ * isValidFile function checks whether the file and content is valid or not to be added 
+ * in meta.json file
+ * Validity measures - 
+ * should not be a .json file and should not include @ignore in the comments of the script 
+ * 
+ * @param {object} compilationAssestsObject compilation.assets object of webpack
+ * @param {string} fileName 
+ * 
+ * @return {boolean}
+ */
+function isValidFile(compilationAssestsObject, fileName) {
+	if(fileName.includes(".json")) {
+		return false;
+	}
+	let content = compilationAssestsObject[fileName].source();
+	let ignoreContent = content.split("\n").filter(line => line.includes("@ignore"));
+	return ignoreContent.length === 0;
 }
 
 /**
