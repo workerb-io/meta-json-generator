@@ -46,7 +46,7 @@ function getFolderScripts(folderObject) {
  * 
  * @return {string}
  */
-function getMetaScripts(dirFiles, dirFolders) {
+function getMetaScripts(dirFiles = [], dirFolders = []) {
 	let scripts = [];
 	dirFiles
 	.filter(fileObject => !fileObject.fileName.includes('.json'))
@@ -156,7 +156,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 		let path = filename.split("/");
 		let file = path.pop();
 		let joinedPath = path.join("/");
-		if(folderDescription[joinedPath]) {
+		if(folderDescription && folderDescription[joinedPath]) {
 			folderDesc = folderDescription[joinedPath];
 		}
 		if(path.length > 0 && path[0] === '') {
