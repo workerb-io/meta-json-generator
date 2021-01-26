@@ -1,0 +1,16 @@
+{
+	"type": "object",
+	"properties": {
+		"package": {
+			"type": "string",
+			"minLength": 1
+		},
+		"packageDescription": {
+			"type": "string",
+			"minLength": 1
+		},
+		"folderDescription": {
+			"type": "object"
+		}
+	}
+}
