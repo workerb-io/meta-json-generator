@@ -67,8 +67,9 @@ module.exports = {
 **"Display all the lists of the board"** description of the list folder
 
 - usage: to add description of required folder taht will be reflected in meta.json file
-
-
+<br />
+<br />
+<br />
 ## Add Description in action scripts
 
 ### Prerequisites for this
@@ -99,7 +100,21 @@ _in any *.ts/*.js file_
 // @description <add script/action description>
 ```
 
-The description will be added in meta.json file just by adding a comment in each script/action with **@description**
+The description will be added in meta.json file just by adding a comment in each script/action with `@description`
+
+<br />
+<br />
+
+## Ignore a particular file
+
+add Comment with `@ignore` on the top of that file
+
+```
+// @ignore
+```
+
+With this the file will not be added as a reference in meta.json file in the dist folder
+
 
 
 
