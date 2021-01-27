@@ -240,8 +240,14 @@ class WBMetaJsonGeneratorPlugin {
 			baseDataPath: "options"
 		});
 		this.package = options.package;
-		this.folderDescription = options.folderDescription;
 		this.packageDescription = options.packageDescription;
+		this.folderDescriptionList = options.folderDescriptionList;
+		this.folderDescription = {};
+		if(this.folderDescriptionList) {
+			this.folderDescriptionList.forEach(folder => {
+				this.folderDescription[folder.path] = folder.description
+			});
+		}
 	}
 
 	apply(compiler) {

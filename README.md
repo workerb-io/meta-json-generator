@@ -52,13 +52,15 @@ module.exports = {
 - usage: in root meta.json file description property
 
 ### _folderDescription_
-- type: object
-- value: an object with folder path/ description as key value pair
+- type: array
+- value: an array of object having folder path/ description as key value pair
 
 ```
-    {
-        "/boards/option/lists": "Display all the lists of the board"
-    }
+    [
+        {   path: "/boards/option/lists",
+            description: "Display all the lists of the board"
+        }
+    ]
 ```
 
 
