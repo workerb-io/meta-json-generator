@@ -67,9 +67,8 @@ module.exports = {
 **"Display all the lists of the board"** description of the list folder
 
 - usage: to add description of required folder taht will be reflected in meta.json file
-<br />
-<br />
-<br />
+
+---
 ## Add Description in action scripts
 
 ### Prerequisites for this
@@ -115,6 +114,18 @@ add Comment with `@ignore` on the top of that file
 
 With this the file will not be added as a reference in meta.json file in the dist folder
 
+---
+## Caution while adding the comments
+
+While adding any special comments (contains either `@description` or `@ignore` or `@name`) make sure to add **Just before the any executable statement**
+
+Example:
+```
+1. // @description some description
+2. import {something} from 'any-library';
+```
+ if *something* is not used in the script means this line is not going to execute and it is the first most line after comments.
+ In this case the @description comment will not going to preserve
 
 
 
