@@ -30,9 +30,9 @@ module.exports = {
         new WBMetaJsonGenerator({
             package: "<package name>",
             packageDescription: "<package descrition>"
-            folderDescription: {
-                "/boards": "Display all the boards!",
-                "/boards/option/lists": "Display all the lists of the board"
+            folderDescriptionList: [
+                { path: "/boards", description: "Display all the boards"},
+                { path: "/boards/option/lists", description: "Display all the lists of the board"}
             }
         })
     ]
@@ -51,7 +51,7 @@ module.exports = {
 - value: description of the package
 - usage: in root meta.json file description property
 
-### _folderDescription_
+### _folderDescriptionList_
 - type: array
 - value: an array of object having folder path/ description as key value pair
 

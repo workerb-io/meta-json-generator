@@ -9,8 +9,8 @@
 			"type": "string",
 			"minLength": 1
 		},
-		"folderDescription": {
-			"type": "object"
+		"folderDescriptionList": {
+			"type": "array"
 		}
 	}
 }
