@@ -75,11 +75,11 @@ function getMetaScripts(dirFiles = [], dirFolders = []) {
  * @return {string}
  * 
  */
-function getMetaJsonContent(dirFiles, dirFolders, dirName) {
+function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc) {
 	let scriptsContent = getMetaScripts(dirFiles, dirFolders);
 	return `{
 	  "name": "${dirName}",
-	  "description": "",
+	  "description": "${dirDesc}",
 	  "scripts": ${scriptsContent}
 	}`;
 }
@@ -112,7 +112,8 @@ function generateMetaJson(dirObject, dirName) {
 	});
 	let fileObjects = dirObject.files;
 	let path = dirObject.parentPath;
-	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName);
+	let dirDesc = dirObject.description;
+	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName, dirDesc);
 	let metaJsonObject = {
 		path,
 		content: metaJsonContent
@@ -146,6 +147,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 	};
 			  
 	for (var filename in compilationAssestsObject) {
+		
 		if(!isValidFile(compilationAssestsObject, filename)) {
 			continue;
 		}
@@ -251,7 +253,7 @@ class WBMetaJsonGeneratorPlugin {
 
 		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.folderDescription);
 
-		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package, completeMetaJsonInfo);
+		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
 
 		completeMetaJsonInfo.forEach(metaInfo => {
 			compilation.assets[`${metaInfo.path}/meta.json`] = {
