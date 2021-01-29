@@ -145,30 +145,32 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 		parentPath: "/",
 		description: packageDescription
 	};
-			  
+
 	for (var filename in compilationAssestsObject) {
 		
 		if(!isValidFile(compilationAssestsObject, filename)) {
 			continue;
 		}
-		let folderDesc = "";
 		let content = compilationAssestsObject[filename].source();
 		let fileDesc = getFileDescription(content);
 		let directory = directoryObject;
 		let path = filename.split("/");
 		let file = path.pop();
-		let joinedPath = path.join("/");
-		if(folderDescription && folderDescription[joinedPath]) {
-			folderDesc = folderDescription[joinedPath];
-		}
 		if(path.length > 0 && path[0] === '') {
 			path.shift();
 		}
+		let visitedPaths = [''];  // to build visited complete path and check if its description in available 
 		while(path.length > 0) {
+			let folderDesc = "";
 			let folder = path.shift();
 			let parent = directory.parentPath;
 			directory = directory.folders;
+			visitedPaths.push(folder);
 			if(!directory[folder]) {
+				let joinedPath = visitedPaths.join("/");  // building the visited path and checking if the description is available
+				if(folderDescription && folderDescription[joinedPath]) {
+					folderDesc = folderDescription[joinedPath];
+				}
 				directory[folder] = {
 					files: [],
 					folders: {},
@@ -219,18 +221,6 @@ function getFileDescription(fileContent) {
 	let description = descriptionComment.length > 0 ? descriptionComment[0].split("@description").pop() : "";
 	return description.trim();
 }
-
-/**
- * camelToTitle function converts any camelcase string to title case
- * @param {string} camelCase
- * 
- * Example: boardMembers => Board Members
- * 
- * @return {string}
- */
-const camel2title = (camelCase = "") => camelCase
-  .replace(/([A-Z])/g, (match) => ` ${match}`)
-  .replace(/^./, (match) => match.toUpperCase());
 
 class WBMetaJsonGeneratorPlugin {
 
