@@ -28,6 +28,7 @@ import the plugin
 module.exports = {
     plugins: [
         new WBMetaJsonGenerator({
+            environment: "development",
             package: "<package name>",
             packageDescription: "<package descrition>"
             folderDescriptionList: [
@@ -40,6 +41,11 @@ module.exports = {
 ```
 
 ## Parameter Explanation
+
+### _environment_
+- type: string
+- value: current mode of webpack [`development` | `production`]
+- based on environment the plugin will get the description
 
 ### _package_ 
 - type: string
@@ -124,9 +130,9 @@ While adding any special comments (contains either `@description` or `@ignore` o
 Example:
 ```
 1. // @description some description
-2. import {something} from 'any-library';
+2. import { some-function } from 'any-library';
 ```
- if *something* is not used in the script means this line is not going to execute and it is the first most line after comments.
+ if *some-function* is not used in the script means this line is not going to execute and it is the first most line after comments.
  In this case the @description comment will not going to preserve
 
 
