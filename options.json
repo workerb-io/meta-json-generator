@@ -11,6 +11,9 @@
 		},
 		"folderDescriptionList": {
 			"type": "array"
+		},
+		"environment": {
+			"type": "string"
 		}
 	}
 }

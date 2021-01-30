@@ -138,7 +138,7 @@ function generateMetaJson(dirObject, dirName) {
  * @return {object}
  * 
  */
-function generateDirectoryObject(compilationAssestsObject, packageDescription, folderDescription) {
+function generateDirectoryObject(compilationAssestsObject, packageDescription, folderDescription, environment) {
 	var directoryObject = {
 		files: [],
 		folders: {},
@@ -152,7 +152,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, f
 			continue;
 		}
 		let content = compilationAssestsObject[filename].source();
-		let fileDesc = getFileDescription(content);
+		let fileDesc = getFileDescription(content, environment);
 		let directory = directoryObject;
 		let path = filename.split("/");
 		let file = path.pop();
@@ -216,9 +216,17 @@ function isValidFile(compilationAssestsObject, fileName) {
  * 
  * @return {string}
  */
-function getFileDescription(fileContent) {
+function getFileDescription(fileContent, environment) {
+	let description = "";
 	let descriptionComment = fileContent.split("\n").filter(line => line.includes("@description"));
-	let description = descriptionComment.length > 0 ? descriptionComment[0].split("@description").pop() : "";
+	if(environment === "production") {
+		description = descriptionComment.length > 0 ? descriptionComment[0].split("@description").pop() : "";
+	} else {
+		if(descriptionComment.length > 0) {
+			let descriptionToken = descriptionComment[0].split("\\n").filter(token => token.includes("@description")).map(val => val.replace("\\r", ""));
+			description = descriptionToken.length > 0 ? descriptionToken[0].split("@description").pop() : "";
+		}
+	}
 	return description.trim();
 }
 
@@ -229,6 +237,8 @@ class WBMetaJsonGeneratorPlugin {
 			name: "WB MetaJson Generator",
 			baseDataPath: "options"
 		});
+		this.defaultEnv = "production";
+		this.environment = options.environment || this.defaultEnv;
 		this.package = options.package;
 		this.packageDescription = options.packageDescription;
 		this.folderDescriptionList = options.folderDescriptionList;
@@ -243,11 +253,10 @@ class WBMetaJsonGeneratorPlugin {
 	apply(compiler) {
 	  // emit is asynchronous hook, tapping into it using tapAsync, you can use tapPromise/tap(synchronous) as well
 	  compiler.hooks.emit.tapAsync('WBMetaJsonGeneratorPlugin', (compilation, callback) => {
-  
 		// Loop through all compiled assets,
 		// adding a new line item for each filename.
 
-		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.folderDescription);
+		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.folderDescription, this.environment);
 
 		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
 
