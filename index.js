@@ -134,6 +134,7 @@ function generateMetaJson(dirObject, dirName) {
  * @param {object} compilationAssestsObject compilation.assets object of webpack
  * @param {string} packageDescription description of the package
  * @param {string} folderDescription description of the folder
+ * @param {string} environment webpack mode in which it is executed
  * 
  * @return {object}
  * 
@@ -212,7 +213,10 @@ function isValidFile(compilationAssestsObject, fileName) {
 
 /**
  * getFileDescription function extracts the description from file content
+ * based on the enviroment (development | production)
+ * 
  * @param {string} fileContent : Content of minified file from webpack
+ * @param {string} environment: webpack mode in which is executed
  * 
  * @return {string}
  */
