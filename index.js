@@ -75,13 +75,18 @@ function getMetaScripts(dirFiles = [], dirFolders = []) {
  * @return {string}
  * 
  */
-function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc) {
+function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites) {
 	let scriptsContent = getMetaScripts(dirFiles, dirFolders);
-	return `{
-	  "name": "${dirName}",
-	  "description": "${dirDesc}",
-	  "scripts": ${scriptsContent}
-	}`;
+	let content = `{
+		"name": "${dirName}",
+		"description": "${dirDesc}",`;
+	if (icon) {
+		content = `${content}
+		"icon": "${icon}",`;
+	}
+	return `${content}
+		"scripts": ${scriptsContent}
+}`;
 }
 
 /**
@@ -113,7 +118,9 @@ function generateMetaJson(dirObject, dirName) {
 	let fileObjects = dirObject.files;
 	let path = dirObject.parentPath;
 	let dirDesc = dirObject.description;
-	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName, dirDesc);
+	let icon = dirObject.icon;
+	let sites = dirObject.sites;
+	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName, dirDesc, icon, sites);
 	let metaJsonObject = {
 		path,
 		content: metaJsonContent
@@ -139,12 +146,14 @@ function generateMetaJson(dirObject, dirName) {
  * @return {object}
  * 
  */
-function generateDirectoryObject(compilationAssestsObject, packageDescription, folderDescription, environment) {
+function generateDirectoryObject(compilationAssestsObject, packageDescription, packageIcon, sites, folderDescription, environment) {
 	var directoryObject = {
 		files: [],
 		folders: {},
 		parentPath: "/",
-		description: packageDescription
+		description: packageDescription,
+		icon: packageIcon,
+		sites: sites
 	};
 
 	for (var filename in compilationAssestsObject) {
@@ -245,6 +254,8 @@ class WBMetaJsonGeneratorPlugin {
 		this.environment = options.environment || this.defaultEnv;
 		this.package = options.package;
 		this.packageDescription = options.packageDescription;
+		this.packageIcon = options.packageIcon;
+		this.sites = options.sites;
 		this.folderDescriptionList = options.folderDescriptionList;
 		this.folderDescription = {};
 		if(this.folderDescriptionList) {
@@ -260,7 +271,8 @@ class WBMetaJsonGeneratorPlugin {
 		// Loop through all compiled assets,
 		// adding a new line item for each filename.
 
-		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.folderDescription, this.environment);
+		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.packageIcon, 
+			this.sites, this.folderDescription, this.environment);
 
 		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
 

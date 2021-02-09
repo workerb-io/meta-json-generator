@@ -9,6 +9,13 @@
 			"type": "string",
 			"minLength": 1
 		},
+		"packageIcon": {
+			"type": "string",
+			"minLength": 1
+		},
+		"sites": {
+			"type": "array"
+		},
 		"folderDescriptionList": {
 			"type": "array"
 		},
