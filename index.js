@@ -71,6 +71,8 @@ function getMetaScripts(dirFiles = [], dirFolders = []) {
  * @param {Array<object>} dirFiles Array of file objects [{file: string, description: string}]
  * @param {Array<object>} dirFolders Array of folder objects [{folderName: string, description: string}]
  * @param {string} dirName Parent folder name
+ * @param {string} dirDesc Parent folder description
+ * @param {string} icon URL of the icon to be used
  * 
  * @return {string}
  * 
@@ -86,7 +88,7 @@ function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites)
 	}
 	return `${content}
 		"scripts": ${scriptsContent}
-}`;
+	}`;
 }
 
 /**
