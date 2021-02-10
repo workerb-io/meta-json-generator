@@ -142,13 +142,16 @@ function generateMetaJson(dirObject, dirName) {
  * 
  * @param {object} compilationAssestsObject compilation.assets object of webpack
  * @param {string} packageDescription description of the package
+ * @param {string} packageIcon Icon URL for package
+ * @param {string} folderIcon Icon URL for all folders inside the package
+ * @param {Array} sites Array of package sites
  * @param {string} folderDescription description of the folder
  * @param {string} environment webpack mode in which it is executed
  * 
  * @return {object}
  * 
  */
-function generateDirectoryObject(compilationAssestsObject, packageDescription, packageIcon, sites, folderDescription, environment) {
+function generateDirectoryObject(compilationAssestsObject, packageDescription, packageIcon, folderIcon, sites, folderDescription, environment) {
 	var directoryObject = {
 		files: [],
 		folders: {},
@@ -187,7 +190,8 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 					files: [],
 					folders: {},
 					parentPath: `${parent}${folder}/`,
-					description: folderDesc
+					description: folderDesc,
+					icon: folderIcon
 				}
 			}
 			directory = directory[folder];
@@ -257,6 +261,7 @@ class WBMetaJsonGeneratorPlugin {
 		this.package = options.package;
 		this.packageDescription = options.packageDescription;
 		this.packageIcon = options.packageIcon;
+		this.folderIcon = options.folderIcon;
 		this.sites = options.sites;
 		this.folderDescriptionList = options.folderDescriptionList;
 		this.folderDescription = {};
@@ -273,8 +278,8 @@ class WBMetaJsonGeneratorPlugin {
 		// Loop through all compiled assets,
 		// adding a new line item for each filename.
 
-		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.packageIcon, 
-			this.sites, this.folderDescription, this.environment);
+		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.packageIcon,
+			this.folderIcon, this.sites, this.folderDescription, this.environment);
 
 		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
 
