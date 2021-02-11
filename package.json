@@ -1,5 +1,5 @@
 {
-  "name": "meta-json-generator",
+  "name": "wb-packager-webpack-plugin",
   "version": "1.0.0",
   "description": "Automatically generates meta.json files for any package in workerb",
   "main": "index.js",

@@ -1,20 +1,26 @@
-# meta-json-generator
+# wb-packager-webpack-plugin
 
-This is a webpack plugin specially designed for workerB packages in order to create meta.json files dynamically.
+This is a webpack plugin specially designed for workerB packages in order to create meta.json files dynamically. So that developer does not have to maintain it manually.
 
 ## How to add the plugin in a workerB package ?
-```yarn add workerb-io/meta-json-generator -D```
+```npm install --save-dev wb-packager-webpack-plugin```
+
+_with yarn_
+```yarn add wb-packager-webpack-plugin -D```
 
 OR
 
 _in package.json_
 ```
-"dependencies": {
-    "meta-json-generator": "workerb-io/meta-json-generator"
+"devDependencies": {
+    "wb-packager-webpack-plugin": "^1.0.0"
 }
-
-yarn install
 ```
+```yarn install```
+
+OR 
+
+```npm install```
 
 ## How to use the plugin ?
 
@@ -22,7 +28,7 @@ _in webpack.config.js_ file
 
 import the plugin
 
-```const WBMetaJsonGenerator = require("meta-json-generator");```
+```const WBMetaJsonGenerator = require("wb-packager-webpack-plugin");```
 
 ```
 module.exports = {
@@ -30,7 +36,9 @@ module.exports = {
         new WBMetaJsonGenerator({
             environment: "development",
             package: "<package name>",
-            packageDescription: "<package descrition>"
+            packageDescription: "<package descrition>",
+            packageIcon: <package icon url>,
+            folderIcon: <folder icon url>,
             folderDescriptionList: [
                 { path: "/boards", description: "Display all the boards"},
                 { path: "/boards/option/lists", description: "Display all the lists of the board"}
@@ -57,6 +65,15 @@ module.exports = {
 - value: description of the package
 - usage: in root meta.json file description property
 
+### _packageIcon_
+- type: string
+- value: icon/logo URL to display along the package name
+- usage: in root meta.json icon property
+
+### _folderIcon_
+- type: string
+- value: icon/logo URL to display alongside every folder in the package
+- usage: in every meta.json icon property
 ### _folderDescriptionList_
 - type: array
 - value: an array of object having folder path/ description as key value pair
