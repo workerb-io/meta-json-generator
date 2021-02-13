@@ -108,6 +108,7 @@ function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites)
  */
 function generateMetaJson(dirObject, dirName) {
 	let completeMetaJsonInfo = [];
+	// terminating condition for recursive function
 	if(!dirObject.files && !dirObject.folders) {
 		return completeMetaJsonInfo;
 	}
@@ -177,6 +178,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 		let visitedPaths = [''];  // to build visited complete path and check if its description in available 
 		while(path.length > 0) {
 			let folderDesc = "";
+			let folderIcon = "";
 			let folder = path.shift();
 			let parent = directory.parentPath;
 			directory = directory.folders;
@@ -184,7 +186,8 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 			if(!directory[folder]) {
 				let joinedPath = visitedPaths.join("/");  // building the visited path and checking if the description is available
 				if(folderDescription && folderDescription[joinedPath]) {
-					folderDesc = folderDescription[joinedPath];
+					folderDesc = folderDescription[joinedPath]["description"];
+					folderIcon = folderDescription[joinedPath]["icon"];
 				}
 				directory[folder] = {
 					files: [],
@@ -267,7 +270,7 @@ class WBMetaJsonGeneratorPlugin {
 		this.folderDescription = {};
 		if(this.folderDescriptionList) {
 			this.folderDescriptionList.forEach(folder => {
-				this.folderDescription[folder.path] = folder.description
+				this.folderDescription[folder.path] = folder;
 			});
 		}
 	}
