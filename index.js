@@ -163,7 +163,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 	};
 
 	for (var filename in compilationAssestsObject) {
-		
+
 		if(!isValidFile(compilationAssestsObject, filename)) {
 			continue;
 		}
@@ -221,7 +221,8 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
  * @return {boolean}
  */
 function isValidFile(compilationAssestsObject, fileName) {
-	if(fileName.includes(".json")) {
+	const invalidFilesRegex = /\.(gif|svg|jpe?g|png|PNG|json)$/
+	if(invalidFilesRegex.test(fileName)) {
 		return false;
 	}
 	let content = compilationAssestsObject[fileName].source();
