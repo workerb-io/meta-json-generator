@@ -22,6 +22,10 @@ OR
 
 ```npm install```
 
+## Prerequisites for the plugin
+[uuid](https://www.npmjs.com/package/uuid) 
+<br />
+
 ## How to use the plugin ?
 
 _in webpack.config.js_ file
@@ -40,7 +44,8 @@ module.exports = {
             packageIcon: <package icon url>,
             folderIcon: <folder icon url>,
             folderDescriptionList: [
-                { path: "/boards", description: "Display all the boards"},
+                { path: "/boards", description: "Display all the boards",
+                iconPath: "pacth ro folder icon"},
                 { path: "/boards/option/lists", description: "Display all the lists of the board"}
             }
         })
@@ -81,7 +86,8 @@ module.exports = {
 ```
     [
         {   path: "/boards/option/lists",
-            description: "Display all the lists of the board"
+            description: "Display all the lists of the board",
+            iconPath: "options property if required to add icon for the folder"
         }
     ]
 ```
@@ -151,6 +157,3 @@ Example:
 ```
  if *some-function* is not used in the script means this line is not going to execute and it is the first most line after comments.
  In this case the @description comment will not going to preserve
-
-
-
