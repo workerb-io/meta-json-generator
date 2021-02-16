@@ -13,10 +13,6 @@
 			"type": "string",
 			"minLength": 1
 		},
-		"folderIcon": {
-			"type": "string",
-			"minLength": 1
-		},
 		"sites": {
 			"type": "array"
 		},

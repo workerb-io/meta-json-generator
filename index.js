@@ -154,7 +154,7 @@ function generateMetaJson(dirObject, dirName) {
  * @return {object}
  * 
  */
-function generateDirectoryObject(compilationAssestsObject, packageDescription, packageIcon, folderIcon, sites, folderInfo, environment) {
+function generateDirectoryObject(compilationAssestsObject, packageDescription, packageIcon, sites, folderInfo, environment) {
 	var directoryObject = {
 		files: [],
 		folders: {},
@@ -256,6 +256,34 @@ function getFileDescription(fileContent, environment) {
 }
 
 /**
+ * getLocalIconData funciton extracts the actual contents of the icon file
+ * and generates the updated path of the icon w.r.t. dist folder and adds
+ * uuid with each file name.
+ * 
+ * @param {string} compilerContext it is the webpacks compiler.context string which has
+ * the info of absolute path of the root directory
+ * @param {string} relativeIconPath relative path of the icon
+ * 
+ * @returns {object} an object containing icon path w.r.t. dist/ folder
+ * example: {
+ * path: "icon path relative to dist/ folder"
+ * content: "BUFFER conatining actual content of icon file"
+ * }
+ */
+function getLocalIconData(compilerContext, relativeIconPath) {
+	const absoluteIconPath = compilerContext + relativeIconPath;
+	const fileContents = fs.readFileSync(absoluteIconPath);
+	// get an array of icon name and extension to append uuid
+	const iconFile = relativeIconPath.split("/").slice(-1).pop().split("."); // ["icon", "ext"]
+	const iconFileName = iconFile[0] + uuidv4() + `.${iconFile[1]}`
+	const writePath = `icons/${iconFileName}`;
+	return {
+		path: writePath,
+		content: fileContents
+	};
+}
+
+/**
  * getFolderIconsInfo function will return information of all local icons that 
  * are mentioned in folderDescriptionList and update the respective iconPath
  * w.r.t. dist directory 
@@ -265,8 +293,8 @@ function getFileDescription(fileContent, environment) {
  * 	description: folder description
  * 	iconPath: path of icon images used for folder w.r.t. root directory
  * }
- * @param {string} compilerContext it the webpacks compiler.context string which has
- * the info of absolute path of the package
+ * @param {string} compilerContext it is the webpacks compiler.context string which has
+ * the info of absolute path of the root directory
  * 
  * @returns {Array<object>} this function will return array of folder icon objects
  * whose structure looks like this:
@@ -283,18 +311,10 @@ function getFolderIconsInfo(folderDescriptionList, compilerContext) {
 	folderDescriptionList
 	.filter(folder => folder.iconPath && !httpUrlRegex.test(folder.iconPath))
 	.forEach(folderData => {
-		const absoluteIconPath = compilerContext + folderData.iconPath;
-		const contents = fs.readFileSync(absoluteIconPath);
-		// get an array of icon name and extension to append uuid
-		const iconFile = folderData.iconPath.split("/").slice(-1).pop().split("."); // ["icon", "ext"]
-		const iconFileName = iconFile[0] + uuidv4() + `.${iconFile[1]}`
-		const writePath = `icons/${iconFileName}`;
+		const iconDataObject = getLocalIconData(compilerContext, folderData.iconPath);
 		// update icon path for meta.json file w.r.t. dist directory
-		folderData.iconPath = writePath;
-		folderIconData.push({
-			path: writePath,
-			content: contents
-		});
+		folderData.iconPath = iconDataObject.path;
+		folderIconData.push(iconDataObject);
 	});
 	return folderIconData;
 }
@@ -311,7 +331,6 @@ class WBMetaJsonGeneratorPlugin {
 		this.package = options.package;
 		this.packageDescription = options.packageDescription;
 		this.packageIcon = options.packageIcon;
-		this.folderIcon = options.folderIcon;
 		this.sites = options.sites;
 		this.folderDescriptionList = options.folderDescriptionList;
 	}
@@ -322,13 +341,13 @@ class WBMetaJsonGeneratorPlugin {
 		// Loop through all compiled assets,
 		// adding a new line item for each filename.
 
-		let folderIconInfo = [];
+		let localIconInfo = [];
 
 		let folderInfo = {};
 
 		if(this.folderDescriptionList) {
 			// get all folder icons info (path of icon file, content of icon file)
-			folderIconInfo = getFolderIconsInfo(this.folderDescriptionList, compiler.context);
+			localIconInfo = getFolderIconsInfo(this.folderDescriptionList, compiler.context);
 
 			// creating folder info object with path of folder as property for faster lookup
 			this.folderDescriptionList.forEach(folder => {
@@ -336,8 +355,19 @@ class WBMetaJsonGeneratorPlugin {
 			});
 		}
 
+		// check if the package icon is remote url or local one.
+		// if it is local we copy conotent of the icon file and update the packageIcon
+		// path w.r.t. dist/icons directory
+		const httpUrlRegex = /(http(s?)):\/\//i;  // to ignore the http | https icon urls
+		if(this.packageIcon && !httpUrlRegex.test(this.packageIcon)) {
+			const iconDataObject = getLocalIconData(compiler.context, this.packageIcon);
+			// update icon path for meta.json file w.r.t. dist directory
+			this.packageIcon = iconDataObject.path;
+			localIconInfo.push(iconDataObject); 
+		}
+
 		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.packageIcon,
-			this.folderIcon, this.sites, folderInfo, this.environment);
+			 this.sites, folderInfo, this.environment);
 
 		// get all meta.json files info (path: where to create, content: meta.json content)
 		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
@@ -362,7 +392,7 @@ class WBMetaJsonGeneratorPlugin {
 			fs.rmdirSync(distIconsDirPath, {recursive: true});
 		}
 
-		folderIconInfo.forEach(folderIcon => {
+		localIconInfo.forEach(folderIcon => {
 			compilation.assets[`${folderIcon.path}`] = {
 				source: function() {
 					return folderIcon.content;

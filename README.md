@@ -41,11 +41,10 @@ module.exports = {
             environment: "development",
             package: "<package name>",
             packageDescription: "<package descrition>",
-            packageIcon: <package icon url>,
-            folderIcon: <folder icon url>,
+            packageIcon: <package icon url(remote/local)>,
             folderDescriptionList: [
                 { path: "/boards", description: "Display all the boards",
-                iconPath: "pacth ro folder icon"},
+                iconPath: "path to folder icon"},
                 { path: "/boards/option/lists", description: "Display all the lists of the board"}
             }
         })
@@ -87,7 +86,7 @@ module.exports = {
     [
         {   path: "/boards/option/lists",
             description: "Display all the lists of the board",
-            iconPath: "options property if required to add icon for the folder"
+            iconPath: "/src/actions/icons/icon123.png" # optional
         }
     ]
 ```
@@ -99,19 +98,22 @@ module.exports = {
 
 - usage: to add description of required folder taht will be reflected in meta.json file
 
+**"/src/actions/icons/icon123.png"** represent local path to the icon relative to root directory
+it can also have remote http path for icon like _"https://raw.githubusercontent.com/workerb-io/wb-github/master/src/actions/branch.png"_
+
 ---
 ## Add Description in action scripts
 
 ### Prerequisites for this
 
-_add UglifyJs plugin in webpack.config.js_
+_add [Terser Plugin](https://webpack.js.org/plugins/terser-webpack-plugin/) in webpack.config.js_
 
 ```
 optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          output: {
+      new TerserPlugin({
+        terserOptions: {
+          format: {
             comments: /(@description|@name|@ignore)/i,
           },
         }
