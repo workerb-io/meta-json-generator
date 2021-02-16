@@ -102,9 +102,13 @@ module.exports = {
 it can also have remote http path for icon like _"https://raw.githubusercontent.com/workerb-io/wb-github/master/src/actions/branch.png"_
 
 :warning: While adding any paths, do not add **"."** in front like this:
+
 _iconPath: "./src/actions/icons/icon123.png"_ OR
+
 _path: "./boards/option/lists",_
+
 This will cause an internal error for more information refer to this [Stackoverflow question](https://stackoverflow.com/questions/13541948/node-js-cant-open-files-error-enoent-stat-path-to-file)
+
 ---
 ## Add Description in action scripts
 
