@@ -4,7 +4,8 @@ const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
 /**
- * getFileScripts function will return the script object of the file for meta json file
+ * getFileScripts function will return the script object of the
+ * file for the meta json file
  * 
  * @param {object} fileObject: Object having name and description info of file
  * fileObject => {file: "setup.js", description: "Setup the user"}
@@ -23,7 +24,8 @@ function getFileScripts(fileObject) {
 }
 
 /**
- * getFolderScripts function will return the script object of the folder for meta json file
+ * getFolderScripts function will return the script object of
+ * the folder for the meta json file
  * @param {object} folderObject Object having name and description info of the folder
  * 
  * folderObject => {folderName: "setup.js", description: "Setup the user"}
@@ -40,8 +42,8 @@ function getFolderScripts(folderObject) {
 }
 
 /**
- * getMetaScripts function will return complete script array including all files and 
- * folders information
+ * getMetaScripts function will return a complete script array
+ * including all files and folders information
  * 
  * @param {Array<object>} dirFiles Array of file objects [{file: string, description: string}]
  * @param {Array<object>} dirFolders Array of folder objects [{folderName: string, description: string}]
@@ -95,7 +97,7 @@ function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites)
 
 /**
  * generateMetaJson function will return completeMetaJsonInfo Array with meta json file info
- * (path : where to create the meta.json file, content: content of meta.json file)
+ * (path: where to create the meta.json file, content: the content of meta.json file)
  * This function uses the concept of recursion to explore all the inner folders.
  * 
  * @param {object} dirObject Object conatining all the info of directories anad files
@@ -141,7 +143,7 @@ function generateMetaJson(dirObject, dirName) {
 
 /**
  * generateDirectoryObject function will build and return the complete directory object
- * having all the informatin of internal files, folders and their description
+ * having all the information of internal files, folders, and their description
  * 
  * @param {object} compilationAssestsObject compilation.assets object of webpack
  * @param {string} packageDescription description of the package
@@ -177,7 +179,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 		if(path.length > 0 && path[0] === '') {
 			path.shift();
 		}
-		let visitedPaths = [''];  // to build visited complete path and check if its description in available 
+		let visitedPaths = [''];  // to build visited complete path and check if its description is available 
 		while(path.length > 0) {
 			let folderDesc = "";
 			let folderIcon = "";
@@ -234,7 +236,7 @@ function isValidFile(compilationAssestsObject, fileName) {
 
 /**
  * getFileDescription function extracts the description from file content
- * based on the enviroment (development | production)
+ * based on the environment (development | production)
  * 
  * @param {string} fileContent : Content of minified file from webpack
  * @param {string} environment: webpack mode in which is executed
@@ -258,7 +260,7 @@ function getFileDescription(fileContent, environment) {
 /**
  * getLocalIconData funciton extracts the actual contents of the icon file
  * and generates the updated path of the icon w.r.t. dist folder and adds
- * uuid with each file name.
+ * UUID with each file name.
  * 
  * @param {string} compilerContext it is the webpacks compiler.context string which has
  * the info of absolute path of the root directory
@@ -273,7 +275,7 @@ function getFileDescription(fileContent, environment) {
 function getLocalIconData(compilerContext, relativeIconPath) {
 	const absoluteIconPath = compilerContext + relativeIconPath;
 	const fileContents = fs.readFileSync(absoluteIconPath);
-	// get an array of icon name and extension to append uuid
+	// get an array of icon name and extension to append UUID
 	const iconFile = relativeIconPath.split("/").slice(-1).pop().split("."); // ["icon", "ext"]
 	const iconFileName = iconFile[0] + uuidv4() + `.${iconFile[1]}`
 	const writePath = `icons/${iconFileName}`;
@@ -293,14 +295,14 @@ function getLocalIconData(compilerContext, relativeIconPath) {
  * 	description: folder description
  * 	iconPath: path of icon images used for folder w.r.t. root directory
  * }
- * @param {string} compilerContext it is the webpacks compiler.context string which has
+ * @param {string} compilerContext it is the webpack's compiler.context string which has
  * the info of absolute path of the root directory
  * 
  * @returns {Array<object>} this function will return array of folder icon objects
  * whose structure looks like this:
  * [
  * 	{
- * 		path: path of the icon relative to the dist directory
+ * 		path: the path of the icon relative to the dist directory
  * 		content: icon images raw contents
  * 	}
  * ]
@@ -331,12 +333,13 @@ class WBMetaJsonGeneratorPlugin {
 		this.package = options.package;
 		this.packageDescription = options.packageDescription;
 		this.packageIcon = options.packageIcon;
+		this.readmeFile = options.readmeFile;
 		this.sites = options.sites;
 		this.folderDescriptionList = options.folderDescriptionList;
 	}
 
 	apply(compiler) {
-	  // emit is asynchronous hook, tapping into it using tapAsync, you can use tapPromise/tap(synchronous) as well
+	  // emit is an asynchronous hook, tapping into it using tapAsync, you can use tapPromise/tap(synchronous) as well
 	  compiler.hooks.emit.tapAsync('WBMetaJsonGeneratorPlugin', (compilation, callback) => {
 		// Loop through all compiled assets,
 		// adding a new line item for each filename.
@@ -346,18 +349,18 @@ class WBMetaJsonGeneratorPlugin {
 		let folderInfo = {};
 
 		if(this.folderDescriptionList) {
-			// get all folder icons info (path of icon file, content of icon file)
+			// get all folder icons info (path of icon file, the content of icon file)
 			localIconInfo = getFolderIconsInfo(this.folderDescriptionList, compiler.context);
 
-			// creating folder info object with path of folder as property for faster lookup
+			// creating folder info object with the path of a folder as property for faster lookup
 			this.folderDescriptionList.forEach(folder => {
 				folderInfo[folder.path] = folder;
 			});
 		}
 
-		// check if the package icon is remote url or local one.
-		// if it is local we copy conotent of the icon file and update the packageIcon
-		// path w.r.t. dist/icons directory
+		// check if the package icon is remote URL or a local one
+		// if it is local then we copy the content of the icon file and update
+		// the packageIcon path w.r.t. dist/icons directory
 		const httpUrlRegex = /(http(s?)):\/\//i;  // to ignore the http | https icon urls
 		if(this.packageIcon && !httpUrlRegex.test(this.packageIcon)) {
 			const iconDataObject = getLocalIconData(compiler.context, this.packageIcon);
@@ -372,6 +375,7 @@ class WBMetaJsonGeneratorPlugin {
 		// get all meta.json files info (path: where to create, content: meta.json content)
 		var completeMetaJsonInfo = generateMetaJson(directoryObject, this.package);
 
+		// writing meta.json files in their respective locations in the dist folder
 		completeMetaJsonInfo.forEach(metaInfo => {
 			compilation.assets[`${metaInfo.path}/meta.json`] = {
 				source: function() {
@@ -385,13 +389,15 @@ class WBMetaJsonGeneratorPlugin {
 
 		// before copying the icon files make sure there should not be any 
 		// existing image files in the dist folder if there is then delete
-		// because icon name will always be unique and every time when
+		// because icon name will always be unique and whenever
 		// the build happens icon files will be accumulating
 		const distIconsDirPath = `${compiler.context}/dist/icons`;
 		if(fs.existsSync(distIconsDirPath)) {
 			fs.rmdirSync(distIconsDirPath, {recursive: true});
 		}
 
+		// copying file content in their respective predefined location
+		// dist/icons/ directory
 		localIconInfo.forEach(folderIcon => {
 			compilation.assets[`${folderIcon.path}`] = {
 				source: function() {
@@ -402,6 +408,23 @@ class WBMetaJsonGeneratorPlugin {
 				}
 			}
 		});
+
+		// Check if the readme file path exists or not and if the path is
+		// there read the contents of the README.md file that the user has 
+		// passed and copy the contents to dist/ folder with
+		// filename as "README.md"
+		if(this.readmeFile) {
+			const absoluteReadmePath = `${compiler.context}/${this.readmeFile}`;
+			const readmeContent = fs.readFileSync(absoluteReadmePath);
+			compilation.assets['/README.md'] = {
+				source: function() {
+					return readmeContent;
+				},
+				size: function() {
+					return readmeContent.length;
+				},
+			};
+		}
 		  
 		callback();
 	  });
