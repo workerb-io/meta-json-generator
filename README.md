@@ -41,7 +41,8 @@ module.exports = {
             environment: "development",
             package: "<package name>",
             packageDescription: "<package descrition>",
-            packageIcon: <package icon url(remote/local)>,
+            packageIcon: "<package icon url(remote/local)>",
+            readmeFile: "README file url w.r.t. root directory",
             folderDescriptionList: [
                 { path: "/boards", description: "Display all the boards",
                 iconPath: "path to folder icon"},
@@ -73,6 +74,11 @@ module.exports = {
 - type: string
 - value: icon/logo URL to display along the package name
 - usage: in root meta.json icon property
+
+### _readmeFile_
+- type: string
+- value: README.md file url w.r.t. root directory
+- usage: README file will be added into package dist folder after build
 
 ### _folderIcon_
 - type: string

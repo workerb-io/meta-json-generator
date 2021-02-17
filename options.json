@@ -13,6 +13,10 @@
 			"type": "string",
 			"minLength": 1
 		},
+		"readmeFile": {
+			"type": "string",
+			"minLength": 1
+		},
 		"sites": {
 			"type": "array"
 		},
