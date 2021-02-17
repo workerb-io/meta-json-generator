@@ -273,7 +273,7 @@ function getFileDescription(fileContent, environment) {
  * }
  */
 function getLocalIconData(compilerContext, relativeIconPath) {
-	const absoluteIconPath = compilerContext + relativeIconPath;
+	const absoluteIconPath = `${compilerContext}/${relativeIconPath}`;
 	const fileContents = fs.readFileSync(absoluteIconPath);
 	// get an array of icon name and extension to append UUID
 	const iconFile = relativeIconPath.split("/").slice(-1).pop().split("."); // ["icon", "ext"]
