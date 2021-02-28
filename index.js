@@ -191,7 +191,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 				let joinedPath = visitedPaths.join("/");  // building the visited path and checking if the description is available
 				if(folderInfo && folderInfo[joinedPath]) {
 					folderDesc = folderInfo[joinedPath]["description"];
-					folderIcon = folderInfo[joinedPath]["iconPath"];
+					folderIcon = folderInfo[joinedPath]["distIconPath"];
 				}
 				directory[folder] = {
 					files: [],
@@ -277,7 +277,7 @@ function getLocalIconData(compilerContext, relativeIconPath) {
 	const fileContents = fs.readFileSync(absoluteIconPath);
 	// get an array of icon name and extension to append UUID
 	const iconFile = relativeIconPath.split("/").slice(-1).pop().split("."); // ["icon", "ext"]
-	const iconFileName = iconFile[0] + uuidv4() + `.${iconFile[1]}`
+	const iconFileName = iconFile[0] + '-' + uuidv4() + `.${iconFile[1]}`
 	const writePath = `icons/${iconFileName}`;
 	return {
 		path: writePath,
@@ -314,8 +314,8 @@ function getFolderIconsInfo(folderDescriptionList, compilerContext) {
 	.filter(folder => folder.iconPath && !httpUrlRegex.test(folder.iconPath))
 	.forEach(folderData => {
 		const iconDataObject = getLocalIconData(compilerContext, folderData.iconPath);
-		// update icon path for meta.json file w.r.t. dist directory
-		folderData.iconPath = iconDataObject.path;
+		// add dist icon path for meta.json file w.r.t. dist directory
+		folderData["distIconPath"] = iconDataObject.path;
 		folderIconData.push(iconDataObject);
 	});
 	return folderIconData;
@@ -348,6 +348,8 @@ class WBMetaJsonGeneratorPlugin {
 
 		let folderInfo = {};
 
+		let distPackageIcon = this.packageIcon;
+
 		if(this.folderDescriptionList) {
 			// get all folder icons info (path of icon file, the content of icon file)
 			localIconInfo = getFolderIconsInfo(this.folderDescriptionList, compiler.context);
@@ -360,16 +362,16 @@ class WBMetaJsonGeneratorPlugin {
 
 		// check if the package icon is remote URL or a local one
 		// if it is local then we copy the content of the icon file and update
-		// the packageIcon path w.r.t. dist/icons directory
+		// the distPackageIcon path w.r.t. dist/icons directory
 		const httpUrlRegex = /(http(s?)):\/\//i;  // to ignore the http | https icon urls
-		if(this.packageIcon && !httpUrlRegex.test(this.packageIcon)) {
+		if(distPackageIcon && !httpUrlRegex.test(distPackageIcon)) {
 			const iconDataObject = getLocalIconData(compiler.context, this.packageIcon);
 			// update icon path for meta.json file w.r.t. dist directory
-			this.packageIcon = iconDataObject.path;
+			distPackageIcon = iconDataObject.path;
 			localIconInfo.push(iconDataObject); 
 		}
 
-		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, this.packageIcon,
+		var directoryObject = generateDirectoryObject(compilation.assets, this.packageDescription, distPackageIcon,
 			 this.sites, folderInfo, this.environment);
 
 		// get all meta.json files info (path: where to create, content: meta.json content)
