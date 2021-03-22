@@ -1,6 +1,6 @@
 # wb-packager-webpack-plugin
 
-This is a webpack plugin specially designed for workerB packages in order to create meta.json files dynamically. So that developer does not have to maintain it manually.
+This is a webpack plugin especially designed for workerB packages in order to create meta.json files dynamically. So that developer does not have to maintain it manually.
 
 ## How to add the plugin in a workerB package ?
 ```npm install --save-dev wb-packager-webpack-plugin```
@@ -13,7 +13,7 @@ OR
 _in package.json_
 ```
 "devDependencies": {
-    "wb-packager-webpack-plugin": "^1.0.8"
+    "wb-packager-webpack-plugin": "^1.1.2"
 }
 ```
 ```yarn install```
@@ -43,10 +43,16 @@ module.exports = {
             packageDescription: "<package descrition>",
             packageIcon: "<package icon url(remote/local)>",
             readmeFile: "README file url w.r.t. root directory",
-            folderDescriptionList: [
-                { path: "/boards", description: "Display all the boards",
-                iconPath: "path to folder icon"},
-                { path: "/boards/option/lists", description: "Display all the lists of the board"}
+            folderDescriptionList: [{ 
+                    path: "/boards", 
+                    description: "Display all the boards",
+                    iconPath: "path to folder icon", 
+                    defaultAction: "any action script you want to execute by default fot this folder"
+                },
+                { 
+                    path: "/boards/option/lists", 
+                    description: "Display all the lists of the board"
+                }
             }
         })
     ]
@@ -92,13 +98,14 @@ module.exports = {
     [
         {   path: "/boards/option/lists",
             description: "Display all the lists of the board",
-            iconPath: "src/actions/icons/icon123.png" # optional
+            iconPath: "src/actions/icons/icon123.png", # optional
+            defaultAction: "open", #optional
         }
     ]
 ```
 
 
-**/boards/option/lists** represents the list folder relative path
+**/boards/option/lists** represents the list folder relative path to src/action/ directory
 
 **"Display all the lists of the board"** description of the list folder
 
@@ -113,20 +120,20 @@ it can also have remote http path for icon like _"https://raw.githubusercontent.
 
 ### Prerequisites for this
 
-_add [Terser Plugin](https://webpack.js.org/plugins/terser-webpack-plugin/) in webpack.config.js_
+_add [Uglifyjs Plugin](https://www.npmjs.com/package/uglifyjs-webpack-plugin) in webpack.config.js_
 
 ```
 optimization: {
     minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          format: {
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          output: {
             comments: /(@description|@name|@ignore)/i,
           },
         }
       }),
     ],
-  }
+}
 ```
 
 _This will preserve all the comments in the file which has either @description or @name or @ignore present_

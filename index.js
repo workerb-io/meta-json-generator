@@ -76,16 +76,18 @@ function getMetaScripts(dirFiles = [], dirFolders = []) {
  * @param {Array<object>} dirFolders Array of folder objects [{folderName: string, description: string}]
  * @param {string} dirName Parent folder name
  * @param {string} dirDesc Parent folder description
+ * @param {string} defaultAction Folder default action to be executed
  * @param {string} icon URL of the icon to be used
  * 
  * @return {string}
  * 
  */
-function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites) {
+function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, defaultAction, icon, sites) {
 	let scriptsContent = getMetaScripts(dirFiles, dirFolders);
 	let content = `{
 		"name": "${dirName}",
-		"description": "${dirDesc}",`;
+		"description": "${dirDesc}",
+		"defaultAction": "${defaultAction}",`;
 	if (icon) {
 		content = `${content}
 		"icon": "${icon}",`;
@@ -100,11 +102,19 @@ function getMetaJsonContent(dirFiles, dirFolders, dirName, dirDesc, icon, sites)
  * (path: where to create the meta.json file, content: the content of meta.json file)
  * This function uses the concept of recursion to explore all the inner folders.
  * 
- * @param {object} dirObject Object conatining all the info of directories anad files
+ * @param {object} dirObject Object containing all the info of directories anad files
  * @param {string} dirName Directory Name to explore
  * @param {Array<object>} completeMetaJsonInfo Array to be updated with meta json files information
  * 
- * dirObject = { files: [Array<string>], folders: {folderName: <object>}, parentPath: "/", description: string }
+ * dirObject = { 
+ * 		files: [Array<string>], 
+ * 		folders: {folderName: <object>}, 
+ * 		parentPath: "/", 
+ * 		description: string,
+ * 		defaultAction: "",
+ *		icon: packageIcon,
+ *		sites: sites
+ * }
  * 
  * completeMetaJsonInfo = [{path: 'meta.json path', content: 'meta.json file content'}]
  * 
@@ -127,7 +137,8 @@ function generateMetaJson(dirObject, dirName) {
 	let dirDesc = dirObject.description;
 	let icon = dirObject.icon;
 	let sites = dirObject.sites;
-	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName, dirDesc, icon, sites);
+	let defaultAction = dirObject.defaultAction;
+	let metaJsonContent = getMetaJsonContent(fileObjects, folderObjects, dirName, dirDesc, defaultAction, icon, sites);
 	let metaJsonObject = {
 		path,
 		content: metaJsonContent
@@ -162,6 +173,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 		folders: {},
 		parentPath: "/",
 		description: packageDescription,
+		defaultAction: "",
 		icon: packageIcon,
 		sites: sites
 	};
@@ -183,6 +195,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 		while(path.length > 0) {
 			let folderDesc = "";
 			let folderIcon = "";
+			let folderDefaultAction = "";
 			let folder = path.shift();
 			let parent = directory.parentPath;
 			directory = directory.folders;
@@ -190,6 +203,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 			if(!directory[folder]) {
 				let joinedPath = visitedPaths.join("/");  // building the visited path and checking if the description is available
 				if(folderInfo && folderInfo[joinedPath]) {
+					folderDefaultAction = folderInfo[joinedPath]["defaultAction"];
 					folderDesc = folderInfo[joinedPath]["description"];
 					folderIcon = folderInfo[joinedPath]["distIconPath"];
 				}
@@ -198,6 +212,7 @@ function generateDirectoryObject(compilationAssestsObject, packageDescription, p
 					folders: {},
 					parentPath: `${parent}${folder}/`,
 					description: folderDesc,
+					defaultAction: folderDefaultAction ? folderDefaultAction : "",
 					icon: folderIcon
 				}
 			}
